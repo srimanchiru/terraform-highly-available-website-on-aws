@@ -66,6 +66,15 @@ resource "aws_route_table_association" "public_subnet_rta" {
   route_table_id = "${aws_route_table.public_rt.id}"
 }
 
+#You now have two instances serving your custom website. The instances are running in private subnets in different availability zones and are assigned to the default security group for the VPC that allows all traffic. There are a few resources that need to be created to allow for an Elastic Load Balancer (ELB) to securely distribute traffic between the instances:
+
+#Public subnets for each availability zone must be created so the load balancer can be accessed from the internet
+#This requires additional resources such as an internet gateway to connect to the internet, and route tables that route to the internet
+#A security group to allow traffic from the internet to the public subnets that will house the ELB on port 80 (HTTP)
+#A security group to allow traffic from the ELB in the public subnets to the instances in the private subnets on port 80 (HTTP)
+#You will make use of separate configuration files to make the configuration more manageable.
+
+
 resource "aws_security_group" "elb_sg" {
   name        = "ELB Security Group"
   description = "Allow incoming HTTP traffic from the internet"
